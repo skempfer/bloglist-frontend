@@ -11,21 +11,32 @@ const App = () => {
   const [user, setUser] = useState(null)
 
   const handleLogin = async (event) => {
-    event.preventDefault()
+  event.preventDefault()
 
-    try {
-      const user = await loginService.login({
-        username,
-        password
-      })
+  try {
+    const user = await loginService.login({
+      username,
+      password
+    })
 
-      setUser(user)
-      setUsername('')
-      setPassword('')
-    } catch (error) {
-      console.error('login failed')
-    }
+    window.localStorage.setItem(
+      'loggedBlogappUser',
+      JSON.stringify(user)
+    )
+    blogService.setToken(user.token)
+    setUser(user)
+    setUsername('')
+    setPassword('')
+  } catch (error) {
+    console.error('login failed')
+  }
 }
+
+const handleLogout = () => {
+  window.localStorage.removeItem('loggedBlogappUser')
+  setUser(null)
+}
+
 const loginForm = () => (
   <form onSubmit={handleLogin}>
     <div>
@@ -47,12 +58,15 @@ const loginForm = () => (
   </form>
 )
 
-
   useEffect(() => {
-    blogService.getAll().then(blogs =>
-      setBlogs( blogs )
-    )  
-  }, [])
+  const loggedUserJSON = window.localStorage.getItem('loggedBlogappUser')
+
+  if (loggedUserJSON) {
+    const user = JSON.parse(loggedUserJSON)
+    setUser(user)
+    blogService.setToken(user.token)
+  }
+}, [])
 
  if (user === null) {
   return (
@@ -66,7 +80,7 @@ const loginForm = () => (
 return (
   <div>
     <p>{user.name} logged in</p>
-
+    <button onClick={handleLogout}>logout</button>
     {blogs.map(blog => (
       <Blog key={blog.id} blog={blog} />
     ))}
