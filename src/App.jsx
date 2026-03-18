@@ -4,6 +4,7 @@ import blogService from './services/blogs'
 import loginService from './services/login'
 import Notification from './components/Notification'
 import LoginForm from './components/FormLogin'
+import Togglable from './components/Togglable'
 import './App.css'
 
 const App = () => {
@@ -88,57 +89,69 @@ const handleCreateBlog = async (event) => {
 
  if (user === null) {
   return (
-    <div>
-      <h2>log in</h2>
+    <div className="app-shell">
+      <div className="app-card">
+        <h1 className="app-title">Bloglist</h1>
+        <h2 className="section-title">log in</h2>
         <Notification message={errorMessage} type="error" />
 
-      <LoginForm
-        handleLogin={handleLogin}
-        username={username}
-        setUsername={setUsername}
-        password={password}
-        setPassword={setPassword}
-      />
+        <LoginForm
+          handleLogin={handleLogin}
+          username={username}
+          setUsername={setUsername}
+          password={password}
+          setPassword={setPassword}
+        />
+      </div>
     </div>
   )
 }
 
 return (
-  <div>
-    <p>{user.name} logged in</p>
-    <button onClick={handleLogout}>logout</button>
-    <h2>create new</h2>
-    <Notification message={message} type="success" />
-    <form onSubmit={handleCreateBlog}>
-      <div>
-        title:
-        <input
-          value={title}
-          onChange={({ target }) => setTitle(target.value)}
-        />
-      </div>
+  <div className="app-shell">
+    <div className="app-card">
+      <header className="app-header">
+        <h1 className="app-title">Bloglist</h1>
+        <div className="user-row">
+          <p className="user-label">{user.name} logged in</p>
+          <button className="button button-secondary" onClick={handleLogout}>logout</button>
+        </div>
+      </header>
 
-      <div>
-        author:
-        <input
-          value={author}
-          onChange={({ target }) => setAuthor(target.value)}
-        />
-      </div>
+      <Notification message={message} type="success" />
 
-      <div>
-        url:
-        <input
-          value={url}
-          onChange={({ target }) => setUrl(target.value)}
-        />
-      </div>
+      <Togglable buttonLabel="create new">
+        <form className="blog-form" onSubmit={handleCreateBlog}>
+          <h2 className="section-title">create new</h2>
 
-      <button type="submit">create</button>
-    </form>
-    {blogs.map(blog => (
-      <Blog key={blog.id} blog={blog} />
-    ))}
+          <label className="field">
+            <span>title</span>
+            <input value={title} onChange={({ target }) => setTitle(target.value)} />
+          </label>
+
+          <label className="field">
+            <span>author</span>
+            <input value={author} onChange={({ target }) => setAuthor(target.value)} />
+          </label>
+
+          <label className="field">
+            <span>url</span>
+            <input value={url} onChange={({ target }) => setUrl(target.value)} />
+          </label>
+
+          <button className="button" type="submit">create</button>
+        </form>
+      </Togglable>
+
+      <section className="blogs-section">
+        <h2 className="section-title">blogs</h2>
+        <div className="blog-list">
+          {blogs.map(blog => (
+            <Blog key={blog.id} blog={blog} />
+          ))}
+        </div>
+      </section>
+    </div>
   </div>
 )
 }
