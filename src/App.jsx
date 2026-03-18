@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Blog from './components/Blog'
 import blogService from './services/blogs'
 import loginService from './services/login'
@@ -15,6 +15,7 @@ const App = () => {
   const [user, setUser] = useState(null)
   const [errorMessage, setErrorMessage] = useState(null)
   const [message, setMessage] = useState(null)
+  const blogFormRef = useRef()
 
   const handleLogin = async (event) => {
   event.preventDefault()
@@ -35,7 +36,7 @@ const App = () => {
     setUser(user)
     setUsername('')
     setPassword('')
-  } catch (error) {
+  } catch {
     setErrorMessage('wrong username or password')
 
     setTimeout(() => {
@@ -52,12 +53,13 @@ const handleLogout = () => {
 const addBlog = async (blogObject) => {
   try {
     const newBlog = await blogService.create(blogObject)
+    blogFormRef.current.toggleVisibility()
 
     setBlogs(prev => prev.concat(newBlog))
 
     setMessage(`a new blog ${newBlog.title} added`)
     setTimeout(() => setMessage(null), 5000)
-  } catch (error) {
+  } catch {
     setErrorMessage('failed to create blog')
   }
 }
@@ -105,7 +107,7 @@ return (
 
       <Notification message={message} type="success" />
 
-      <Togglable buttonLabel="create new">
+      <Togglable buttonLabel="create new" ref={blogFormRef}>
         <BlogForm createBlog={addBlog} />
       </Togglable>
 
