@@ -3,6 +3,7 @@ import Blog from './components/Blog'
 import blogService from './services/blogs'
 import loginService from './services/login'
 import Notification from './components/Notification'
+import LoginForm from './components/FormLogin'
 import './App.css'
 
 const App = () => {
@@ -45,27 +46,6 @@ const handleLogout = () => {
   setUser(null)
 }
 
-const loginForm = () => (
-  <form onSubmit={handleLogin}>
-    <div>
-      username
-      <input
-        value={username}
-        onChange={({ target }) => setUsername(target.value)}
-      />
-    </div>
-    <div>
-      password
-      <input
-        type="password"
-        value={password}
-        onChange={({ target }) => setPassword(target.value)}
-      />
-    </div>
-    <button type="submit">login</button>
-  </form>
-)
-
   useEffect(() => {
   const loggedUserJSON = window.localStorage.getItem('loggedBlogappUser')
 
@@ -80,8 +60,15 @@ const loginForm = () => (
   return (
     <div>
       <h2>log in</h2>
-      {loginForm()}
       <Notification message={errorMessage} />
+
+      <LoginForm
+        handleLogin={handleLogin}
+        username={username}
+        setUsername={setUsername}
+        password={password}
+        setPassword={setPassword}
+      />
     </div>
   )
 }
