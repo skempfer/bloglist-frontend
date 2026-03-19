@@ -50,6 +50,24 @@ const handleLogout = () => {
   setUser(null)
 }
 
+const handleLike = async (blog) => {
+  try {
+    const updatedBlog = {
+      ...blog,
+      likes: blog.likes + 1,
+      user: blog.user.id ? blog.user.id : blog.user
+    }
+
+    const returnedBlog = await blogService.update(blog.id, updatedBlog)
+
+    returnedBlog.user = blog.user
+
+    setBlogs(prev => prev.map(b => (b.id === blog.id ? returnedBlog : b)))
+  } catch (error) {
+    console.error('Error updating likes:', error)
+  }
+}
+
 const addBlog = async (blogObject) => {
   try {
     const newBlog = await blogService.create(blogObject)
@@ -115,7 +133,7 @@ return (
         <h2 className="section-title">blogs</h2>
         <div className="blog-list">
           {blogs.map(blog => (
-            <Blog key={blog.id} blog={blog} />
+            <Blog key={blog.id} blog={blog} handleLike={handleLike} />
           ))}
         </div>
       </section>
