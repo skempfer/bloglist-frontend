@@ -84,7 +84,11 @@ const addBlog = async (blogObject) => {
   }
 }
 
-  useEffect(() => {
+const sortedBlogs = useMemo(() => {
+  return [...blogs].sort((a, b) => b.likes - a.likes)
+}, [blogs])
+
+useEffect(() => {
   const loggedUserJSON = window.localStorage.getItem('loggedBlogappUser')
 
   if (loggedUserJSON) {
@@ -134,7 +138,7 @@ return (
       <section className="blogs-section">
         <h2 className="section-title">blogs</h2>
         <div className="blog-list">
-          {blogs.map(blog => (
+          {sortedBlogs.map(blog => (
             <Blog key={blog.id} blog={blog} handleLike={handleLike} />
           ))}
         </div>
