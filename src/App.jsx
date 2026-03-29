@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useMemo } from 'react'
 import Blog from './components/Blog'
 import blogService from './services/blogs'
 import loginService from './services/login'
@@ -75,12 +75,34 @@ const addBlog = async (blogObject) => {
     const newBlog = await blogService.create(blogObject)
     blogFormRef.current.toggleVisibility()
 
-    setBlogs(prev => prev.concat(newBlog))
+    const normalizedBlog = {
+      ...newBlog,
+      // Backend can return only user id on create; keep full user for UI ownership checks.
+      user: newBlog.user && typeof newBlog.user === 'object' ? newBlog.user : user
+    }
+
+    setBlogs(prev => prev.concat(normalizedBlog))
 
     setMessage(`a new blog ${newBlog.title} added`)
     setTimeout(() => setMessage(null), 5000)
   } catch {
     setErrorMessage('failed to create blog')
+  }
+}
+
+const handleDelete = async (blog) => {
+  const confirmDelete = window.confirm(
+    `Remove blog ${blog.title} by ${blog.author}?`
+  )
+
+  if (!confirmDelete) return
+
+  try {
+    await blogService.remove(blog.id, user.token)
+
+    setBlogs(prev => prev.filter(b => b.id !== blog.id))
+  } catch {
+    console.error('failed to delete blog')
   }
 }
 
@@ -97,6 +119,29 @@ useEffect(() => {
     blogService.setToken(user.token)
   }
 }, [])
+
+useEffect(() => {
+  if (!user) {
+    setBlogs([])
+    return
+  }
+
+  const fetchBlogs = async () => {
+    try {
+      const initialBlogs = await blogService.getAll()
+      setBlogs(initialBlogs)
+    } catch {
+      // If backend is unavailable, force a new login instead of leaving a broken state.
+      window.localStorage.removeItem('loggedBlogappUser')
+      blogService.setToken(null)
+      setUser(null)
+      setErrorMessage('backend indisponivel, faca login novamente')
+      setTimeout(() => setErrorMessage(null), 5000)
+    }
+  }
+
+  fetchBlogs()
+}, [user])
 
  if (user === null) {
   return (
@@ -139,7 +184,13 @@ return (
         <h2 className="section-title">blogs</h2>
         <div className="blog-list">
           {sortedBlogs.map(blog => (
-            <Blog key={blog.id} blog={blog} handleLike={handleLike} />
+            <Blog
+              key={blog.id}
+              blog={blog}
+              currentUser={user}
+              handleLike={handleLike}
+              handleDelete={handleDelete}
+            />
           ))}
         </div>
       </section>

@@ -1,8 +1,16 @@
 import { useState } from 'react'
 import './Blog.css'
 
-const Blog = ({ blog, handleLike }) => {
+const Blog = ({ blog, handleLike, handleDelete, currentUser }) => {
   const [visible, setVisible] = useState(false)
+  const blogOwner = blog.user
+  const blogOwnerId =
+    typeof blogOwner === 'object' ? (blogOwner.id || blogOwner._id) : blogOwner
+  const currentUserId = currentUser?.id || currentUser?._id
+  const isOwner =
+    !!currentUser &&
+    ((typeof blogOwner === 'object' && blogOwner?.username === currentUser.username) ||
+      (blogOwnerId && currentUserId && blogOwnerId === currentUserId))
 
   return (
     <article className="blog blog-item">
@@ -24,6 +32,11 @@ const Blog = ({ blog, handleLike }) => {
             <span>likes {blog.likes}</span>
             <button className="button blog-like-button" onClick={() => handleLike(blog)}>like</button>
           </div>
+          {isOwner && (
+            <button className="button button-danger blog-delete-button" onClick={() => handleDelete(blog)}>
+              delete
+            </button>
+          )}
         </div>
       )}
     </article>
