@@ -66,6 +66,12 @@ const App = () => {
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['blogs'] })
   })
 
+  const commentMutation = useMutation({
+    mutationFn: ({ id, comment }) => blogService.addComment(id, comment),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['blogs'] }),
+    onError: () => showNotification('failed to add comment', 'error')
+  })
+
   const handleLogin = async (event) => {
     event.preventDefault()
     try {
@@ -86,6 +92,10 @@ const App = () => {
   }
 
   const addBlog = (blogObject) => createBlogMutation.mutate(blogObject)
+
+  const handleComment = (id, comment) => {
+    commentMutation.mutate({ id, comment })
+  }
 
   if (user === null) {
     return (
@@ -173,6 +183,7 @@ const App = () => {
                 blogs={blogs}
                 handleLike={handleLike}
                 handleDelete={handleDelete}
+                handleComment={handleComment}
                 currentUser={user}
               />
             }

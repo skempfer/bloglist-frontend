@@ -1,8 +1,15 @@
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import { useParams } from 'react-router-dom'
 
-const BlogView = ({ blogs, handleLike, handleDelete, currentUser }) => {
+const BlogView = ({
+  blogs,
+  handleLike,
+  handleDelete,
+  handleComment,
+  currentUser
+}) => {
   const { id } = useParams()
+  const [comment, setComment] = useState('')
 
   const blog = useMemo(() => blogs.find((b) => b.id === id), [blogs, id])
 
@@ -19,6 +26,16 @@ const BlogView = ({ blogs, handleLike, handleDelete, currentUser }) => {
     ((typeof blogOwner === 'object' &&
       blogOwner?.username === currentUser.username) ||
       (blogOwnerId && currentUserId && blogOwnerId === currentUserId))
+
+  const submitComment = (event) => {
+    event.preventDefault()
+    const trimmedComment = comment.trim()
+    if (!trimmedComment) {
+      return
+    }
+    handleComment(blog.id, trimmedComment)
+    setComment('')
+  }
 
   return (
     <section>
@@ -42,6 +59,25 @@ const BlogView = ({ blogs, handleLike, handleDelete, currentUser }) => {
           remove
         </button>
       )}
+
+      <h3>comments</h3>
+
+      <form onSubmit={submitComment} className="blog-comment-form">
+        <input
+          value={comment}
+          onChange={({ target }) => setComment(target.value)}
+          placeholder="write a comment"
+        />
+        <button className="button" type="submit">
+          add comment
+        </button>
+      </form>
+
+      <ul>
+        {(blog.comments || []).map((existingComment, index) => (
+          <li key={`${blog.id}-comment-${index}`}>{existingComment}</li>
+        ))}
+      </ul>
     </section>
   )
 }
