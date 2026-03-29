@@ -1,8 +1,16 @@
-# React + Vite
+# Bloglist Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This project is a study case built during the Full Stack Open course from the University of Helsinki.
 
-Currently, two official plugins are available:
+Official course website:
+https://fullstackopen.com/en/
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## About
+
+This is the frontend for the Blog List app.
+It includes:
+
+- user authentication
+- creating, liking, and deleting blogs
+- unit tests with Vitest
+- E2E tests with Playwright
