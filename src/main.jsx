@@ -1,5 +1,25 @@
 import { createElement } from 'react'
 import ReactDOM from 'react-dom/client'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { BrowserRouter } from 'react-router-dom'
 import App from './App'
+import { NotificationProvider } from './contexts/NotificationContext'
+import { UserProvider } from './contexts/UserContext'
 
-ReactDOM.createRoot(document.getElementById('root')).render(createElement(App))
+const queryClient = new QueryClient()
+
+ReactDOM.createRoot(document.getElementById('root')).render(
+  createElement(
+    BrowserRouter,
+    null,
+    createElement(
+      QueryClientProvider,
+      { client: queryClient },
+      createElement(
+        NotificationProvider,
+        null,
+        createElement(UserProvider, null, createElement(App))
+      )
+    )
+  )
+)

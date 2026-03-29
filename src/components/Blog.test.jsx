@@ -1,6 +1,7 @@
 import { createElement } from 'react'
-import { cleanup, fireEvent, render, screen } from '@testing-library/react'
-import { afterEach, describe, expect, test, vi } from 'vitest'
+import { cleanup, render, screen } from '@testing-library/react'
+import { afterEach, describe, expect, test } from 'vitest'
+import { MemoryRouter } from 'react-router-dom'
 import Blog from './Blog'
 
 afterEach(() => {
@@ -8,8 +9,9 @@ afterEach(() => {
 })
 
 describe('Blog component', () => {
-  test('renders title and author by default, but not URL or likes', () => {
+  test('renders title link and author, but not URL or likes', () => {
     const blog = {
+      id: 'blog-1',
       title: 'Testing React apps',
       author: 'Ada Lovelace',
       url: 'https://example.com/testing-react',
@@ -20,24 +22,22 @@ describe('Blog component', () => {
       }
     }
 
-    render(
-      createElement(Blog, {
-        blog,
-        handleLike: () => {},
-        handleDelete: () => {},
-        currentUser: { id: 'user-1', username: 'ada' }
-      })
-    )
+    render(createElement(MemoryRouter, null, createElement(Blog, { blog })))
 
-    expect(screen.getByText('Testing React apps')).toBeInTheDocument()
+    expect(
+      screen.getByRole('link', { name: 'Testing React apps' })
+    ).toBeInTheDocument()
     expect(screen.getByText('by Ada Lovelace')).toBeInTheDocument()
 
-    expect(screen.queryByText('https://example.com/testing-react')).not.toBeInTheDocument()
+    expect(
+      screen.queryByText('https://example.com/testing-react')
+    ).not.toBeInTheDocument()
     expect(screen.queryByText('likes 42')).not.toBeInTheDocument()
   })
 
-  test('shows URL and likes when view button is clicked', () => {
+  test('title links to the blog details route', () => {
     const blog = {
+      id: 'blog-1',
       title: 'Testing React apps',
       author: 'Ada Lovelace',
       url: 'https://example.com/testing-react',
@@ -48,23 +48,15 @@ describe('Blog component', () => {
       }
     }
 
-    render(
-      createElement(Blog, {
-        blog,
-        handleLike: () => {},
-        handleDelete: () => {},
-        currentUser: { id: 'user-1', username: 'ada' }
-      })
-    )
+    render(createElement(MemoryRouter, null, createElement(Blog, { blog })))
 
-    fireEvent.click(screen.getByRole('button', { name: 'view' }))
-
-    expect(screen.getByText('https://example.com/testing-react')).toBeInTheDocument()
-    expect(screen.getByText('likes 42')).toBeInTheDocument()
+    const titleLink = screen.getByRole('link', { name: 'Testing React apps' })
+    expect(titleLink).toHaveAttribute('href', '/blogs/blog-1')
   })
 
-  test('calls like event handler twice when like button is clicked twice', () => {
+  test('does not render view toggle button anymore', () => {
     const blog = {
+      id: 'blog-1',
       title: 'Testing React apps',
       author: 'Ada Lovelace',
       url: 'https://example.com/testing-react',
@@ -75,23 +67,8 @@ describe('Blog component', () => {
       }
     }
 
-    const handleLike = vi.fn()
+    render(createElement(MemoryRouter, null, createElement(Blog, { blog })))
 
-    render(
-      createElement(Blog, {
-        blog,
-        handleLike,
-        handleDelete: () => {},
-        currentUser: { id: 'user-1', username: 'ada' }
-      })
-    )
-
-    fireEvent.click(screen.getByRole('button', { name: 'view' }))
-
-    const likeButton = screen.getByRole('button', { name: 'like' })
-    fireEvent.click(likeButton)
-    fireEvent.click(likeButton)
-
-    expect(handleLike).toHaveBeenCalledTimes(2)
+    expect(screen.queryByRole('button', { name: 'view' })).not.toBeInTheDocument()
   })
 })

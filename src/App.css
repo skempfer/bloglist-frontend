@@ -51,6 +51,40 @@ body {
   margin-bottom: 18px;
 }
 
+.app-nav {
+  display: flex;
+  gap: 10px;
+  margin: 0 0 14px;
+}
+
+.app-nav-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: #ffffff;
+  color: var(--text-main);
+  text-decoration: none;
+  font-weight: 700;
+  padding: 8px 14px;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.app-nav-link:hover {
+  background: var(--surface-soft);
+  border-color: color-mix(in srgb, var(--accent), white 45%);
+}
+
+.app-nav-link.active {
+  background: var(--accent);
+  color: #ffffff;
+  border-color: var(--accent);
+}
+
 .app-title {
   font-family: 'Fraunces', serif;
   font-size: clamp(2rem, 4vw, 2.8rem);
@@ -107,7 +141,9 @@ input {
   color: var(--text-main);
   padding: 10px 12px;
   outline: none;
-  transition: border-color 0.18s ease, box-shadow 0.18s ease;
+  transition:
+    border-color 0.18s ease,
+    box-shadow 0.18s ease;
 }
 
 input:focus {
@@ -126,7 +162,9 @@ input:focus {
   padding: 11px 16px;
   cursor: pointer;
   width: fit-content;
-  transition: background-color 0.2s ease, transform 0.08s ease;
+  transition:
+    background-color 0.2s ease,
+    transform 0.08s ease;
 }
 
 .button:hover {
@@ -161,6 +199,64 @@ input:focus {
 
 .blogs-section {
   margin-top: 22px;
+}
+
+.users-view,
+.user-view,
+.blog-view {
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--surface-soft);
+  padding: 16px;
+}
+
+.users-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #ffffff;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.users-table th,
+.users-table td {
+  text-align: left;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--line);
+}
+
+.users-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.users-link {
+  color: var(--accent-strong);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.users-link:hover {
+  text-decoration: underline;
+}
+
+.user-subtitle {
+  margin: 8px 0 10px;
+  font-family: 'Fraunces', serif;
+}
+
+.user-blog-list,
+.blog-comments-list {
+  margin: 0;
+  padding-left: 22px;
+  display: grid;
+  gap: 8px;
+}
+
+.blog-owner-line {
+  margin: 10px 0;
+  color: var(--text-muted);
+  font-weight: 600;
 }
 
 .blog-list {
@@ -238,5 +334,17 @@ input:focus {
   .user-row {
     flex-direction: column;
     align-items: stretch;
+  }
+
+  .app-nav {
+    flex-wrap: wrap;
+  }
+
+  .app-nav-link {
+    width: 100%;
+  }
+
+  .users-table {
+    font-size: 0.95rem;
   }
 }
