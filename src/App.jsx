@@ -1,10 +1,12 @@
 import { useState, useRef, useMemo } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { Routes, Route, Link } from 'react-router-dom'
 import Blog from './components/Blog'
 import Notification from './components/Notification'
 import LoginForm from './components/FormLogin'
 import BlogForm from './components/BlogForm'
 import Togglable from './components/Togglable'
+import Users from './components/Users'
 import blogService from './services/blogs'
 import {
   useNotification,
@@ -110,6 +112,10 @@ const App = () => {
       <div className="app-card">
         <header className="app-header">
           <h1 className="app-title">Bloglist</h1>
+          <nav className="app-nav">
+            <Link to="/">blogs</Link>
+            <Link to="/users">users</Link>
+          </nav>
           <div className="user-row">
             <p className="user-label">{user.name} logged in</p>
             <button className="button button-secondary" onClick={logout}>
@@ -123,24 +129,33 @@ const App = () => {
           type={notification?.type}
         />
 
-        <Togglable buttonLabel="create new" ref={blogFormRef}>
-          <BlogForm createBlog={addBlog} />
-        </Togglable>
-
-        <section className="blogs-section">
-          <h2 className="section-title">blogs</h2>
-          <div className="blog-list">
-            {sortedBlogs.map((blog) => (
-              <Blog
-                key={blog.id}
-                blog={blog}
-                currentUser={user}
-                handleLike={handleLike}
-                handleDelete={handleDelete}
-              />
-            ))}
-          </div>
-        </section>
+        <Routes>
+          <Route
+            path="/"
+            element={
+              <>
+                <Togglable buttonLabel="create new" ref={blogFormRef}>
+                  <BlogForm createBlog={addBlog} />
+                </Togglable>
+                <section className="blogs-section">
+                  <h2 className="section-title">blogs</h2>
+                  <div className="blog-list">
+                    {sortedBlogs.map((blog) => (
+                      <Blog
+                        key={blog.id}
+                        blog={blog}
+                        currentUser={user}
+                        handleLike={handleLike}
+                        handleDelete={handleDelete}
+                      />
+                    ))}
+                  </div>
+                </section>
+              </>
+            }
+          />
+          <Route path="/users" element={<Users />} />
+        </Routes>
       </div>
     </div>
   )
