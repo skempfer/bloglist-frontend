@@ -16,7 +16,9 @@ describe('BlogForm component', () => {
     const inputs = screen.getAllByRole('textbox')
     fireEvent.change(inputs[0], { target: { value: 'New testing blog' } })
     fireEvent.change(inputs[1], { target: { value: 'Ada Lovelace' } })
-    fireEvent.change(inputs[2], { target: { value: 'https://example.com/new-testing-blog' } })
+    fireEvent.change(inputs[2], {
+      target: { value: 'https://example.com/new-testing-blog' }
+    })
 
     fireEvent.click(screen.getByRole('button', { name: 'create' }))
 

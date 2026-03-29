@@ -5,11 +5,12 @@ const Blog = ({ blog, handleLike, handleDelete, currentUser }) => {
   const [visible, setVisible] = useState(false)
   const blogOwner = blog.user
   const blogOwnerId =
-    typeof blogOwner === 'object' ? (blogOwner.id || blogOwner._id) : blogOwner
+    typeof blogOwner === 'object' ? blogOwner.id || blogOwner._id : blogOwner
   const currentUserId = currentUser?.id || currentUser?._id
   const isOwner =
     !!currentUser &&
-    ((typeof blogOwner === 'object' && blogOwner?.username === currentUser.username) ||
+    ((typeof blogOwner === 'object' &&
+      blogOwner?.username === currentUser.username) ||
       (blogOwnerId && currentUserId && blogOwnerId === currentUserId))
 
   return (
@@ -20,7 +21,10 @@ const Blog = ({ blog, handleLike, handleDelete, currentUser }) => {
           <p className="blog-author">by {blog.author}</p>
         </div>
 
-        <button className="button button-secondary blog-toggle" onClick={() => setVisible(!visible)}>
+        <button
+          className="button button-secondary blog-toggle"
+          onClick={() => setVisible(!visible)}
+        >
           {visible ? 'hide' : 'view'}
         </button>
       </div>
@@ -30,10 +34,18 @@ const Blog = ({ blog, handleLike, handleDelete, currentUser }) => {
           <p className="blog-url">{blog.url}</p>
           <div className="blog-likes-row">
             <span>likes {blog.likes}</span>
-            <button className="button blog-like-button" onClick={() => handleLike(blog)}>like</button>
+            <button
+              className="button blog-like-button"
+              onClick={() => handleLike(blog)}
+            >
+              like
+            </button>
           </div>
           {isOwner && (
-            <button className="button button-danger blog-delete-button" onClick={() => handleDelete(blog)}>
+            <button
+              className="button button-danger blog-delete-button"
+              onClick={() => handleDelete(blog)}
+            >
               delete
             </button>
           )}

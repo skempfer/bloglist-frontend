@@ -32,7 +32,9 @@ describe('Blog component', () => {
     expect(screen.getByText('Testing React apps')).toBeInTheDocument()
     expect(screen.getByText('by Ada Lovelace')).toBeInTheDocument()
 
-    expect(screen.queryByText('https://example.com/testing-react')).not.toBeInTheDocument()
+    expect(
+      screen.queryByText('https://example.com/testing-react')
+    ).not.toBeInTheDocument()
     expect(screen.queryByText('likes 42')).not.toBeInTheDocument()
   })
 
@@ -59,7 +61,9 @@ describe('Blog component', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'view' }))
 
-    expect(screen.getByText('https://example.com/testing-react')).toBeInTheDocument()
+    expect(
+      screen.getByText('https://example.com/testing-react')
+    ).toBeInTheDocument()
     expect(screen.getByText('likes 42')).toBeInTheDocument()
   })
 

@@ -53,7 +53,9 @@ describe('Blog app', () => {
       await loginWith(page, 'mluukkai', 'wrong-password')
 
       await expect(page.getByText('wrong username or password')).toBeVisible()
-      await expect(page.getByText('Matti Luukkainen logged in')).not.toBeVisible()
+      await expect(
+        page.getByText('Matti Luukkainen logged in')
+      ).not.toBeVisible()
     })
   })
 
@@ -69,8 +71,12 @@ describe('Blog app', () => {
         url: 'https://example.com/playwright-blog'
       })
 
-      await expect(page.getByText('a new blog Playwright Blog Creation added')).toBeVisible()
-      await expect(page.getByRole('heading', { name: 'Playwright Blog Creation' }).first()).toBeVisible()
+      await expect(
+        page.getByText('a new blog Playwright Blog Creation added')
+      ).toBeVisible()
+      await expect(
+        page.getByRole('heading', { name: 'Playwright Blog Creation' }).first()
+      ).toBeVisible()
       await expect(page.getByText('by Matti Luukkainen').first()).toBeVisible()
     })
 
@@ -98,7 +104,9 @@ describe('Blog app', () => {
       await page.reload()
 
       const blogItem = page
-        .locator('.blog-item', { has: page.getByRole('heading', { name: 'Playwright Blog Like' }) })
+        .locator('.blog-item', {
+          has: page.getByRole('heading', { name: 'Playwright Blog Like' })
+        })
         .first()
 
       await blogItem.getByRole('button', { name: 'view' }).click()
@@ -121,22 +129,31 @@ describe('Blog app', () => {
       })
 
       const blogItem = page
-        .locator('.blog-item', { has: page.getByRole('heading', { name: 'Playwright Blog Delete' }) })
+        .locator('.blog-item', {
+          has: page.getByRole('heading', { name: 'Playwright Blog Delete' })
+        })
         .first()
 
       await blogItem.getByRole('button', { name: 'view' }).click()
-      await expect(blogItem.getByRole('button', { name: 'delete' })).toBeVisible()
+      await expect(
+        blogItem.getByRole('button', { name: 'delete' })
+      ).toBeVisible()
 
-      page.once('dialog', async dialog => {
+      page.once('dialog', async (dialog) => {
         await dialog.accept()
       })
 
       await blogItem.getByRole('button', { name: 'delete' }).click()
 
-      await expect(page.getByRole('heading', { name: 'Playwright Blog Delete' })).toHaveCount(0)
+      await expect(
+        page.getByRole('heading', { name: 'Playwright Blog Delete' })
+      ).toHaveCount(0)
     })
 
-    test('only the user who added the blog sees the delete button', async ({ page, request }) => {
+    test('only the user who added the blog sees the delete button', async ({
+      page,
+      request
+    }) => {
       await request.post(`${backendUrl}/api/users`, {
         data: {
           name: 'Other User',
@@ -155,15 +172,22 @@ describe('Blog app', () => {
       await loginWith(page, 'otheruser', 'salainen2')
 
       const blogItem = page
-        .locator('.blog-item', { has: page.getByRole('heading', { name: 'Playwright Blog Ownership' }) })
+        .locator('.blog-item', {
+          has: page.getByRole('heading', { name: 'Playwright Blog Ownership' })
+        })
         .first()
 
       await blogItem.getByRole('button', { name: 'view' }).click()
 
-      await expect(blogItem.getByRole('button', { name: 'delete' })).toHaveCount(0)
+      await expect(
+        blogItem.getByRole('button', { name: 'delete' })
+      ).toHaveCount(0)
     })
 
-    test('blogs are ordered by likes with most likes first', async ({ page, request }) => {
+    test('blogs are ordered by likes with most likes first', async ({
+      page,
+      request
+    }) => {
       const loginResponse = await request.post(`${backendUrl}/api/login`, {
         data: {
           username: 'mluukkai',
@@ -210,11 +234,19 @@ describe('Blog app', () => {
 
       await page.reload()
 
-      await expect(page.getByRole('heading', { name: 'Most liked blog' }).first()).toBeVisible()
-      await expect(page.getByRole('heading', { name: 'Medium liked blog' }).first()).toBeVisible()
-      await expect(page.getByRole('heading', { name: 'Least liked blog' }).first()).toBeVisible()
+      await expect(
+        page.getByRole('heading', { name: 'Most liked blog' }).first()
+      ).toBeVisible()
+      await expect(
+        page.getByRole('heading', { name: 'Medium liked blog' }).first()
+      ).toBeVisible()
+      await expect(
+        page.getByRole('heading', { name: 'Least liked blog' }).first()
+      ).toBeVisible()
 
-      const titles = await page.locator('.blog-item .blog-title').allTextContents()
+      const titles = await page
+        .locator('.blog-item .blog-title')
+        .allTextContents()
       const mostLikedIndex = titles.indexOf('Most liked blog')
       const mediumLikedIndex = titles.indexOf('Medium liked blog')
       const leastLikedIndex = titles.indexOf('Least liked blog')
@@ -225,7 +257,6 @@ describe('Blog app', () => {
 
       expect(mostLikedIndex).toBeLessThan(mediumLikedIndex)
       expect(mediumLikedIndex).toBeLessThan(leastLikedIndex)
-
     })
   })
 })
