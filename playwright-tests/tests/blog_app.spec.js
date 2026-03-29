@@ -162,5 +162,70 @@ describe('Blog app', () => {
 
       await expect(blogItem.getByRole('button', { name: 'delete' })).toHaveCount(0)
     })
+
+    test('blogs are ordered by likes with most likes first', async ({ page, request }) => {
+      const loginResponse = await request.post(`${backendUrl}/api/login`, {
+        data: {
+          username: 'mluukkai',
+          password: 'salainen'
+        }
+      })
+      const { token } = await loginResponse.json()
+
+      await request.post(`${backendUrl}/api/blogs`, {
+        data: {
+          title: 'Least liked blog',
+          author: 'Matti Luukkainen',
+          url: 'https://example.com/least-liked',
+          likes: 1
+        },
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      })
+
+      await request.post(`${backendUrl}/api/blogs`, {
+        data: {
+          title: 'Most liked blog',
+          author: 'Matti Luukkainen',
+          url: 'https://example.com/most-liked',
+          likes: 12
+        },
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      })
+
+      await request.post(`${backendUrl}/api/blogs`, {
+        data: {
+          title: 'Medium liked blog',
+          author: 'Matti Luukkainen',
+          url: 'https://example.com/medium-liked',
+          likes: 5
+        },
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      })
+
+      await page.reload()
+
+      await expect(page.getByRole('heading', { name: 'Most liked blog' }).first()).toBeVisible()
+      await expect(page.getByRole('heading', { name: 'Medium liked blog' }).first()).toBeVisible()
+      await expect(page.getByRole('heading', { name: 'Least liked blog' }).first()).toBeVisible()
+
+      const titles = await page.locator('.blog-item .blog-title').allTextContents()
+      const mostLikedIndex = titles.indexOf('Most liked blog')
+      const mediumLikedIndex = titles.indexOf('Medium liked blog')
+      const leastLikedIndex = titles.indexOf('Least liked blog')
+
+      expect(mostLikedIndex).toBeGreaterThan(-1)
+      expect(mediumLikedIndex).toBeGreaterThan(-1)
+      expect(leastLikedIndex).toBeGreaterThan(-1)
+
+      expect(mostLikedIndex).toBeLessThan(mediumLikedIndex)
+      expect(mediumLikedIndex).toBeLessThan(leastLikedIndex)
+
+    })
   })
 })
