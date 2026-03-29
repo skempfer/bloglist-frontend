@@ -8,6 +8,7 @@ import BlogForm from './components/BlogForm'
 import Togglable from './components/Togglable'
 import Users from './components/Users'
 import User from './components/User'
+import BlogView from './components/BlogView'
 import blogService from './services/blogs'
 import {
   useNotification,
@@ -142,13 +143,7 @@ const App = () => {
                   <h2 className="section-title">blogs</h2>
                   <div className="blog-list">
                     {sortedBlogs.map((blog) => (
-                      <Blog
-                        key={blog.id}
-                        blog={blog}
-                        currentUser={user}
-                        handleLike={handleLike}
-                        handleDelete={handleDelete}
-                      />
+                      <Blog key={blog.id} blog={blog} />
                     ))}
                   </div>
                 </section>
@@ -157,6 +152,17 @@ const App = () => {
           />
           <Route path="/users" element={<Users />} />
           <Route path="/users/:id" element={<User />} />
+          <Route
+            path="/blogs/:id"
+            element={
+              <BlogView
+                blogs={blogs}
+                handleLike={handleLike}
+                handleDelete={handleDelete}
+                currentUser={user}
+              />
+            }
+          />
         </Routes>
       </div>
     </div>
