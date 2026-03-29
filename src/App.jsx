@@ -1,6 +1,6 @@
 import { useState, useRef, useMemo } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { Routes, Route, Link } from 'react-router-dom'
+import { Routes, Route, NavLink } from 'react-router-dom'
 import Blog from './components/Blog'
 import Notification from './components/Notification'
 import LoginForm from './components/FormLogin'
@@ -115,8 +115,22 @@ const App = () => {
         <header className="app-header">
           <h1 className="app-title">Bloglist</h1>
           <nav className="app-nav">
-            <Link to="/">blogs</Link>
-            <Link to="/users">users</Link>
+            <NavLink
+              to="/"
+              className={({ isActive }) =>
+                `app-nav-link ${isActive ? 'active' : ''}`.trim()
+              }
+            >
+              blogs
+            </NavLink>
+            <NavLink
+              to="/users"
+              className={({ isActive }) =>
+                `app-nav-link ${isActive ? 'active' : ''}`.trim()
+              }
+            >
+              users
+            </NavLink>
           </nav>
           <div className="user-row">
             <p className="user-label">{user.name} logged in</p>
