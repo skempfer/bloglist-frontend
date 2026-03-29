@@ -135,5 +135,32 @@ describe('Blog app', () => {
 
       await expect(page.getByRole('heading', { name: 'Playwright Blog Delete' })).toHaveCount(0)
     })
+
+    test('only the user who added the blog sees the delete button', async ({ page, request }) => {
+      await request.post(`${backendUrl}/api/users`, {
+        data: {
+          name: 'Other User',
+          username: 'otheruser',
+          password: 'salainen2'
+        }
+      })
+
+      await createBlogWith(page, {
+        title: 'Playwright Blog Ownership',
+        author: 'Matti Luukkainen',
+        url: 'https://example.com/playwright-ownership'
+      })
+
+      await page.getByRole('button', { name: 'logout' }).click()
+      await loginWith(page, 'otheruser', 'salainen2')
+
+      const blogItem = page
+        .locator('.blog-item', { has: page.getByRole('heading', { name: 'Playwright Blog Ownership' }) })
+        .first()
+
+      await blogItem.getByRole('button', { name: 'view' }).click()
+
+      await expect(blogItem.getByRole('button', { name: 'delete' })).toHaveCount(0)
+    })
   })
 })
