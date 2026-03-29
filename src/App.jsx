@@ -8,6 +8,18 @@ import BlogForm from './components/BlogForm'
 import Togglable from './components/Togglable'
 import './App.css'
 
+const getUserIdFromToken = (token) => {
+  if (!token) return null
+
+  try {
+    const payload = token.split('.')[1]
+    const decodedPayload = JSON.parse(atob(payload.replace(/-/g, '+').replace(/_/g, '/')))
+    return decodedPayload.id || null
+  } catch {
+    return null
+  }
+}
+
 const App = () => {
   const importedComponents = [Blog, Notification, LoginForm, BlogForm, Togglable]
   void importedComponents
@@ -24,19 +36,24 @@ const App = () => {
   event.preventDefault()
 
   try {
-    const user = await loginService.login({
+    const loggedUser = await loginService.login({
       username,
       password
     })
 
+    const normalizedUser = {
+      ...loggedUser,
+      id: loggedUser.id || getUserIdFromToken(loggedUser.token)
+    }
+
     window.localStorage.setItem(
       'loggedBlogappUser',
-      JSON.stringify(user)
+      JSON.stringify(normalizedUser)
     )
 
-    blogService.setToken(user.token)
+    blogService.setToken(normalizedUser.token)
 
-    setUser(user)
+    setUser(normalizedUser)
     setUsername('')
     setPassword('')
   } catch {
@@ -117,9 +134,14 @@ useEffect(() => {
   const loggedUserJSON = window.localStorage.getItem('loggedBlogappUser')
 
   if (loggedUserJSON) {
-    const user = JSON.parse(loggedUserJSON)
-    setUser(user)
-    blogService.setToken(user.token)
+    const parsedUser = JSON.parse(loggedUserJSON)
+    const normalizedUser = {
+      ...parsedUser,
+      id: parsedUser.id || getUserIdFromToken(parsedUser.token)
+    }
+
+    setUser(normalizedUser)
+    blogService.setToken(normalizedUser.token)
   }
 }, [])
 
