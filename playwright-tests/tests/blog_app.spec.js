@@ -8,6 +8,17 @@ const loginWith = async (page, username, password) => {
   await page.getByRole('button', { name: 'login' }).click()
 }
 
+const createBlogWith = async (page, { title, author, url }) => {
+  await page.getByRole('button', { name: 'create new' }).click()
+
+  const inputs = page.getByRole('textbox')
+  await inputs.nth(0).fill(title)
+  await inputs.nth(1).fill(author)
+  await inputs.nth(2).fill(url)
+
+  await page.getByRole('button', { name: 'create' }).click()
+}
+
 describe('Blog app', () => {
   beforeEach(async ({ page, request }) => {
     await request.post(`${backendUrl}/api/testing/reset`)
@@ -52,18 +63,34 @@ describe('Blog app', () => {
     })
 
     test('a new blog can be created', async ({ page }) => {
-      await page.getByRole('button', { name: 'create new' }).click()
-
-      const inputs = page.getByRole('textbox')
-      await inputs.nth(0).fill('Playwright Blog Creation')
-      await inputs.nth(1).fill('Matti Luukkainen')
-      await inputs.nth(2).fill('https://example.com/playwright-blog')
-
-      await page.getByRole('button', { name: 'create' }).click()
+      await createBlogWith(page, {
+        title: 'Playwright Blog Creation',
+        author: 'Matti Luukkainen',
+        url: 'https://example.com/playwright-blog'
+      })
 
       await expect(page.getByText('a new blog Playwright Blog Creation added')).toBeVisible()
       await expect(page.getByRole('heading', { name: 'Playwright Blog Creation' }).first()).toBeVisible()
       await expect(page.getByText('by Matti Luukkainen').first()).toBeVisible()
+    })
+
+    test('a blog can be liked', async ({ page }) => {
+      await createBlogWith(page, {
+        title: 'Playwright Blog Like',
+        author: 'Matti Luukkainen',
+        url: 'https://example.com/playwright-like'
+      })
+
+      const blogItem = page
+        .locator('.blog-item', { has: page.getByRole('heading', { name: 'Playwright Blog Like' }) })
+        .first()
+
+      await blogItem.getByRole('button', { name: 'view' }).click()
+      await expect(blogItem.getByText('likes 0')).toBeVisible()
+
+      await blogItem.getByRole('button', { name: 'like' }).click()
+
+      await expect(blogItem.getByText('likes 1')).toBeVisible()
     })
   })
 })
