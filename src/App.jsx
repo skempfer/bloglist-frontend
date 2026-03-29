@@ -7,6 +7,7 @@ import LoginForm from './components/FormLogin'
 import BlogForm from './components/BlogForm'
 import Togglable from './components/Togglable'
 import Users from './components/Users'
+import User from './components/User'
 import blogService from './services/blogs'
 import {
   useNotification,
@@ -155,6 +156,7 @@ const App = () => {
             }
           />
           <Route path="/users" element={<Users />} />
+          <Route path="/users/:id" element={<User />} />
         </Routes>
       </div>
     </div>
