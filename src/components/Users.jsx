@@ -9,9 +9,9 @@ const Users = () => {
   })
 
   return (
-    <div>
-      <h2>Users</h2>
-      <table>
+    <section className="users-view">
+      <h2 className="section-title">Users</h2>
+      <table className="users-table">
         <thead>
           <tr>
             <th></th>
@@ -24,14 +24,16 @@ const Users = () => {
           {users.map((user) => (
             <tr key={user.id}>
               <td>
-                <Link to={`/users/${user.id}`}>{user.name}</Link>
+                <Link className="users-link" to={`/users/${user.id}`}>
+                  {user.name}
+                </Link>
               </td>
               <td>{user.blogs.length}</td>
             </tr>
           ))}
         </tbody>
       </table>
-    </div>
+    </section>
   )
 }
 

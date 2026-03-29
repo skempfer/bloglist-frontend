@@ -38,8 +38,8 @@ const BlogView = ({
   }
 
   return (
-    <section>
-      <h2>
+    <section className="blog-view">
+      <h2 className="section-title">
         {blog.title} {blog.author}
       </h2>
 
@@ -52,7 +52,9 @@ const BlogView = ({
         </button>
       </div>
 
-      <p>added by {blog.user?.name || blog.user?.username || 'unknown'}</p>
+      <p className="blog-owner-line">
+        added by {blog.user?.name || blog.user?.username || 'unknown'}
+      </p>
 
       {isOwner && (
         <button className="button button-danger" onClick={() => handleDelete(blog)}>
@@ -60,7 +62,7 @@ const BlogView = ({
         </button>
       )}
 
-      <h3>comments</h3>
+      <h3 className="user-subtitle">comments</h3>
 
       <form onSubmit={submitComment} className="blog-comment-form">
         <input
@@ -73,7 +75,7 @@ const BlogView = ({
         </button>
       </form>
 
-      <ul>
+      <ul className="blog-comments-list">
         {(blog.comments || []).map((existingComment, index) => (
           <li key={`${blog.id}-comment-${index}`}>{existingComment}</li>
         ))}
