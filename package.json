@@ -8,8 +8,13 @@
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "test": "vitest run",
-    "test:watch": "vitest"
+    "test": "npm run test:unit",
+    "test:watch": "npm run test:unit:watch",
+    "test:unit": "vitest run",
+    "test:unit:watch": "vitest",
+    "test:e2e": "npm --prefix playwright-tests test",
+    "test:e2e:ui": "npm --prefix playwright-tests run test:ui",
+    "test:e2e:headed": "npm --prefix playwright-tests run test:headed"
   },
   "dependencies": {
     "axios": "^1.9.0",
