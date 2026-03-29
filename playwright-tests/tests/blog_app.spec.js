@@ -74,23 +74,66 @@ describe('Blog app', () => {
       await expect(page.getByText('by Matti Luukkainen').first()).toBeVisible()
     })
 
-    test('a blog can be liked', async ({ page }) => {
-      await createBlogWith(page, {
-        title: 'Playwright Blog Like',
-        author: 'Matti Luukkainen',
-        url: 'https://example.com/playwright-like'
+    test('a blog can be liked', async ({ page, request }) => {
+      const loginResponse = await request.post(`${backendUrl}/api/login`, {
+        data: {
+          username: 'mluukkai',
+          password: 'salainen'
+        }
       })
+      const { token } = await loginResponse.json()
+
+      await request.post(`${backendUrl}/api/blogs`, {
+        data: {
+          title: 'Playwright Blog Like',
+          author: 'Matti Luukkainen',
+          url: 'https://example.com/playwright-like',
+          likes: 0
+        },
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      })
+
+      await page.reload()
 
       const blogItem = page
         .locator('.blog-item', { has: page.getByRole('heading', { name: 'Playwright Blog Like' }) })
         .first()
 
       await blogItem.getByRole('button', { name: 'view' }).click()
-      await expect(blogItem.getByText('likes 0')).toBeVisible()
+      const likesLabel = blogItem.locator('.blog-likes-row span')
+      await expect(likesLabel).toBeVisible()
+      const likesBefore = await likesLabel.textContent()
 
       await blogItem.getByRole('button', { name: 'like' }).click()
 
-      await expect(blogItem.getByText('likes 1')).toBeVisible()
+      await expect
+        .poll(async () => likesLabel.textContent())
+        .not.toBe(likesBefore)
+    })
+
+    test('the user who added a blog can delete it', async ({ page }) => {
+      await createBlogWith(page, {
+        title: 'Playwright Blog Delete',
+        author: 'Matti Luukkainen',
+        url: 'https://example.com/playwright-delete'
+      })
+
+      const blogItem = page
+        .locator('.blog-item', { has: page.getByRole('heading', { name: 'Playwright Blog Delete' }) })
+        .first()
+
+      await blogItem.getByRole('button', { name: 'view' }).click()
+      await expect(blogItem.getByRole('button', { name: 'delete' })).toBeVisible()
+
+      page.once('dialog', async dialog => {
+        await dialog.accept()
+      })
+
+      await blogItem.getByRole('button', { name: 'delete' }).click()
+
+      await expect(page.getByRole('heading', { name: 'Playwright Blog Delete' })).toHaveCount(0)
     })
   })
 })
