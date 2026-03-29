@@ -9,6 +9,9 @@ import Togglable from './components/Togglable'
 import './App.css'
 
 const App = () => {
+  const importedComponents = [Blog, Notification, LoginForm, BlogForm, Togglable]
+  void importedComponents
+
   const [blogs, setBlogs] = useState([])
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
